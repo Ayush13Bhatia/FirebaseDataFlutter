@@ -2,6 +2,7 @@ import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({this.app});
@@ -15,6 +16,7 @@ class _HomePageState extends State<HomePage> {
   DatabaseReference _movieRef;
   final movieName = "MoviesTitle";
   final movieController = TextEditingController();
+  bool isLoading = true;
   @override
   void initState() {
     final FirebaseDatabase database = FirebaseDatabase(app: widget.app);
@@ -35,9 +37,16 @@ class _HomePageState extends State<HomePage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
+            GestureDetector(
+              child: Column(
+                children: [
+                  Image.asset("assets/logo.png"),
+                ],
+              ),
+            ),
             Center(
               child: Container(
-                color: Theme.of(context).accentColor,
+                color: Colors.white,
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height,
                 child: Column(
