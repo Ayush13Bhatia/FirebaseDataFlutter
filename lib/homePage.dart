@@ -1,8 +1,11 @@
+import 'dart:io';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({this.app});
@@ -14,9 +17,10 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final FirebaseDatabase referenceDatabase = FirebaseDatabase.instance;
   DatabaseReference _movieRef;
+
   final movieName = "MoviesTitle";
   final movieController = TextEditingController();
-  bool isLoading = true;
+  String imageUrl;
   @override
   void initState() {
     final FirebaseDatabase database = FirebaseDatabase(app: widget.app);
@@ -38,6 +42,9 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           children: [
             GestureDetector(
+              onTap: () {
+                uploadImage();
+              },
               child: Column(
                 children: [
                   Image.asset("assets/logo.png"),
@@ -106,5 +113,31 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
+  }
+
+  uploadImage() async {
+    final _storage = FirebaseStorage.instance;
+    final _picker = ImagePicker();
+    PickedFile image;
+    await Permission.photos.request();
+    var permissionStatus = await Permission.photos.status;
+
+    if (permissionStatus.isGranted) {
+      image = await _picker.getImage(source: ImageSource.gallery);
+      var file = File(image.path);
+
+      if (image != null) {
+        var snapShot =
+            await _storage.ref().child('folderName/imageName').putFile(file);
+        var downloadUrl = await snapShot.ref.getDownloadURL();
+        setState(() {
+          imageUrl = downloadUrl;
+        });
+      } else {
+        print("No Path Received");
+      }
+    } else {
+      print("Grant Permision and try again");
+    }
   }
 }
