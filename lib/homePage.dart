@@ -47,7 +47,17 @@ class _HomePageState extends State<HomePage> {
               },
               child: Column(
                 children: [
-                  Image.asset("assets/logo.png"),
+                  (imageUrl == null)
+                      ? Image.asset(
+                          "assets/logo.png",
+                          height: 300.0,
+                          width: 300.0,
+                        )
+                      : Image.network(
+                          imageUrl,
+                          height: 300.0,
+                          width: 300.0,
+                        ),
                 ],
               ),
             ),
@@ -134,7 +144,7 @@ class _HomePageState extends State<HomePage> {
           imageUrl = downloadUrl;
         });
       } else {
-        print("No Path Received");
+        print("Not Available");
       }
     } else {
       print("Grant Permision and try again");
